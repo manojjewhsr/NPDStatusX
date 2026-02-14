@@ -92,6 +92,8 @@ The script will:
 
 Update the `Web.config` file with your Oracle database connection details:
 
+> **Security Note:** Never commit actual credentials to source control. In production, use encrypted configuration sections, environment variables, or Azure Key Vault. See the Security Considerations section in INSTALLATION.md for more details.
+
 **Option 1: EZConnect Format (Recommended - Simpler)**
 ```xml
 <connectionStrings>

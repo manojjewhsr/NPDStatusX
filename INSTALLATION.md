@@ -99,6 +99,8 @@ Update-Package -reinstall
 
 Open `Web.config` and update the connection string:
 
+> **Security Warning:** Never commit actual credentials to source control! See the Security Considerations section below for best practices on securing database credentials in production.
+
 **Option 1: EZConnect Format (Recommended - Simpler)**
 ```xml
 <connectionStrings>
@@ -119,6 +121,9 @@ connectionString="Data Source=localhost:1521/XE;User Id=SYSTEM;Password=oracle;"
 ```
 
 **Option 2: TNS Format (Advanced - For complex network configurations)**
+
+To use this format, comment out the EZConnect connection string and uncomment this one:
+
 ```xml
 <connectionStrings>
     <add name="OracleConnection" 
