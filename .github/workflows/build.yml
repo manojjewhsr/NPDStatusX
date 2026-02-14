@@ -1,0 +1,161 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    
+    permissions:
+      contents: read
+      actions: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+      
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
+      
+    - name: Display environment info
+      run: |
+        echo "MSBuild version:"
+        msbuild -version
+        echo "NuGet version:"
+        nuget help | Select-String -Pattern "NuGet Version"
+      
+    - name: Restore NuGet packages
+      run: nuget restore NPDStatusX.sln
+      
+    - name: Build solution (Release)
+      run: msbuild NPDStatusX.sln /p:Configuration=Release /v:minimal /m
+      
+    - name: Build solution (Debug)
+      run: msbuild NPDStatusX.sln /p:Configuration=Debug /v:minimal /m
+      
+    - name: Upload build artifacts (Release)
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-build
+        path: |
+          bin/Release/
+          NPDStatusDashboard.aspx
+          NPDStatusDashboard.css
+          Web.config
+        retention-days: 7
+        
+    - name: Upload build artifacts (Debug)
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-build
+        path: |
+          bin/Debug/
+        retention-days: 3
+
+  build-linux:
+    name: Build on Linux (Mono)
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Mono
+      run: |
+        # Install Mono using recommended method
+        sudo apt-get update
+        sudo apt-get install -y gnupg ca-certificates
+        sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+        echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+        sudo apt-get update
+        sudo apt-get install -y mono-complete mono-reference-assemblies-4.0
+        
+    - name: Display environment info
+      run: |
+        echo "Mono version:"
+        mono --version
+        echo "MSBuild version:"
+        msbuild /version || xbuild /version
+        
+    - name: Download NuGet
+      run: |
+        wget -q https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+        chmod +x nuget.exe
+        
+    - name: Restore NuGet packages
+      run: mono nuget.exe restore NPDStatusX.sln
+      
+    - name: Build solution
+      run: msbuild NPDStatusX.sln /p:Configuration=Release /v:minimal || xbuild NPDStatusX.sln /p:Configuration=Release /v:minimal
+      continue-on-error: true
+      
+    - name: Check build results
+      run: |
+        if [ -d "bin/Release" ]; then
+          echo "Build artifacts found in bin/Release"
+          ls -la bin/Release
+        else
+          echo "Warning: Build artifacts not found. This is expected as .NET Framework builds may not fully work on Linux."
+        fi
+
+  test-rebuild-scripts:
+    name: Test Rebuild Scripts
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Test PowerShell script (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        .\rebuild.ps1 -Help
+        
+    - name: Test Batch script (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+        rebuild.bat --help
+        
+    - name: Test Bash script (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        chmod +x rebuild.sh
+        ./rebuild.sh --help
+        
+    - name: Test Makefile (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        make help
+        
+    - name: Test Makefile (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        if (Get-Command make -ErrorAction SilentlyContinue) {
+          make help
+        } else {
+          Write-Host "Make not installed on Windows (optional)"
+        }

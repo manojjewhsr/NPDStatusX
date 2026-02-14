@@ -1,0 +1,53 @@
+name: Quick Build
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-using-scripts:
+    name: Build using rebuild scripts
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    
+    permissions:
+      contents: read
+      actions: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup MSBuild
+      if: runner.os == 'Windows'
+      uses: microsoft/setup-msbuild@v2
+      
+    - name: Setup NuGet
+      if: runner.os == 'Windows'
+      uses: nuget/setup-nuget@v2
+      
+    - name: Build using PowerShell script
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        .\rebuild.ps1 -Configuration Release
+        
+    - name: Upload artifacts
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: npd-status-release
+        path: |
+          bin/Release/
+          NPDStatusDashboard.aspx
+          NPDStatusDashboard.css
+          Web.config
+        retention-days: 7
