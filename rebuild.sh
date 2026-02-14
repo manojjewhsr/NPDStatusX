@@ -80,7 +80,6 @@ EOF
 fi
 
 SOLUTION_FILE="NPDStatusX.sln"
-PROJECT_FILE="NPDStatusX.csproj"
 
 echo -e "${CYAN}========================================${NC}"
 echo -e "${CYAN}NPDStatusX Rebuild Script${NC}"

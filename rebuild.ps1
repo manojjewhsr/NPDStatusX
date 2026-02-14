@@ -38,7 +38,6 @@ Examples:
 
 $ErrorActionPreference = "Stop"
 $SolutionFile = "NPDStatusX.sln"
-$ProjectFile = "NPDStatusX.csproj"
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "NPDStatusX Rebuild Script" -ForegroundColor Cyan
