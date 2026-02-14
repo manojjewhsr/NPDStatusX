@@ -99,6 +99,26 @@ Update-Package -reinstall
 
 Open `Web.config` and update the connection string:
 
+**Option 1: EZConnect Format (Recommended - Simpler)**
+```xml
+<connectionStrings>
+    <add name="OracleConnection" 
+         connectionString="Data Source=localhost:1521/XE;User Id=your-username;Password=your-password;" 
+         providerName="Oracle.ManagedDataAccess.Client" />
+</connectionStrings>
+```
+
+**Connection String Parameters:**
+- `hostname:port/service_name`: Oracle server connection (e.g., localhost:1521/XE)
+- `User Id`: Database username
+- `Password`: Database password
+
+**Example for Oracle XE on localhost:**
+```xml
+connectionString="Data Source=localhost:1521/XE;User Id=SYSTEM;Password=oracle;"
+```
+
+**Option 2: TNS Format (Advanced - For complex network configurations)**
 ```xml
 <connectionStrings>
     <add name="OracleConnection" 
@@ -107,22 +127,12 @@ Open `Web.config` and update the connection string:
 </connectionStrings>
 ```
 
-**Connection String Parameters:**
+**TNS Connection String Parameters:**
 - `HOST`: Your Oracle server hostname or IP (e.g., localhost, 192.168.1.100)
 - `PORT`: Oracle listener port (default: 1521)
 - `SERVICE_NAME`: Your Oracle service name (e.g., ORCL, XE)
 - `User Id`: Database username
 - `Password`: Database password
-
-**Example for Oracle XE on localhost:**
-```xml
-connectionString="Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XE)));User Id=SYSTEM;Password=oracle;"
-```
-
-**Alternative: EZConnect Format**
-```xml
-connectionString="Data Source=localhost:1521/XE;User Id=SYSTEM;Password=oracle;"
-```
 
 ---
 
