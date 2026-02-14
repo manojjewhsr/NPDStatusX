@@ -77,3 +77,6 @@ node_modules/
 *.temp
 tmp/
 temp/
+
+# Build tools (downloaded by scripts)
+nuget.exe

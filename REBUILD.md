@@ -206,6 +206,21 @@ wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
 
 ## CI/CD Integration
 
+This project includes pre-configured GitHub Actions workflows for continuous integration.
+
+### Available Workflows
+
+**1. Build and Test** (`.github/workflows/build.yml`)
+- Comprehensive build on Windows and Linux
+- Tests all rebuild scripts
+- Runs on multiple operating systems
+- Uploads build artifacts
+
+**2. Quick Build** (`.github/workflows/quick-build.yml`)
+- Fast build using rebuild scripts
+- Windows-only for .NET Framework compatibility
+- Ideal for rapid testing
+
 ### GitHub Actions Example
 
 ```yaml
@@ -218,10 +233,10 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v2
     
     - name: Restore packages
       run: nuget restore NPDStatusX.sln
