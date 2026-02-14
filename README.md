@@ -50,6 +50,11 @@ NPDStatusX/
 ├── Web.config                        # Configuration file
 ├── DatabaseSchema.sql                # Database schema and sample data
 ├── APEX_to_WebForms_Mapping.md       # Detailed mapping documentation
+├── REBUILD.md                        # Rebuild and build instructions
+├── rebuild.ps1                       # PowerShell rebuild script
+├── rebuild.sh                        # Bash rebuild script
+├── rebuild.bat                       # Batch rebuild script
+├── Makefile                          # Make-based build automation
 └── README.md                         # This file
 ```
 
@@ -96,6 +101,15 @@ Update the `Web.config` file with your Oracle database connection details:
 ```
 
 ### 3. Build and Deploy
+
+**Using Rebuild Scripts (Recommended):**
+
+For detailed build instructions, see [REBUILD.md](REBUILD.md).
+
+Quick start:
+- Windows: `.\rebuild.ps1` or `rebuild.bat`
+- Linux/macOS: `./rebuild.sh`
+- Any platform: `make rebuild`
 
 **Using Visual Studio:**
 1. Open the project in Visual Studio
