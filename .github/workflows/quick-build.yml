@@ -7,6 +7,9 @@ on:
     branches: [ main, master, develop ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-using-scripts:
     name: Build using rebuild scripts
@@ -14,6 +17,10 @@ jobs:
       matrix:
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
+    
+    permissions:
+      contents: read
+      actions: write
     
     steps:
     - name: Checkout code
