@@ -92,6 +92,18 @@ The script will:
 
 Update the `Web.config` file with your Oracle database connection details:
 
+> **Security Note:** Never commit actual credentials to source control. In production, use encrypted configuration sections, environment variables, or Azure Key Vault. See the Security Considerations section in INSTALLATION.md for more details.
+
+**Option 1: EZConnect Format (Recommended - Simpler)**
+```xml
+<connectionStrings>
+    <add name="OracleConnection" 
+         connectionString="Data Source=localhost:1521/XE;User Id=your-username;Password=your-password;" 
+         providerName="Oracle.ManagedDataAccess.Client" />
+</connectionStrings>
+```
+
+**Option 2: TNS Format (Advanced - For complex configurations)**
 ```xml
 <connectionStrings>
     <add name="OracleConnection" 
